@@ -1,0 +1,67 @@
+<?php
+
+namespace Deimos\Database\Queries;
+
+use Deimos\Database\Connection;
+use Deimos\Database\Database;
+use Deimos\QueryBuilder\Instruction\Select;
+use Deimos\QueryBuilder\QueryBuilder;
+
+class Query extends Select
+{
+
+    protected $database;
+
+    /**
+     * Instruction constructor.
+     *
+     * @param QueryBuilder $builder
+     * @param Database     $database
+     */
+    public function __construct(QueryBuilder $builder, Database $database)
+    {
+        parent::__construct($builder);
+        $this->database = $database;
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        $self = clone $this;
+        $self->setSelect([
+            'count' => $this->database->raw('COUNT(1)')
+        ]);
+
+        $data = $self->findOne();
+
+        return $data['count'];
+    }
+
+    /**
+     * @return array
+     */
+    public function find()
+    {
+        return $this
+            ->database
+            ->queryInstruction($this)
+            ->fetchAll(Connection::FETCH_ASSOC);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function findOne()
+    {
+        $self = clone $this;
+        $self->limit(1);
+
+        return $self
+            ->database
+            ->queryInstruction($self)
+            ->fetch(Connection::FETCH_ASSOC);
+    }
+
+}
