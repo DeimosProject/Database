@@ -1,0 +1,20 @@
+language: php
+php:
+  - '5.6'
+  - '7.0'
+  - '7.1'
+  - nightly
+
+before_script:
+  - "composer install --dev"
+  - "composer require codeclimate/php-test-reporter --dev"
+
+script:
+  - "phpunit --coverage-text --coverage-clover build/logs/clover.xml"
+
+addons:
+  code_climate:
+    repo_token: 29f1a3215a5477dfb254624d35c3716eed4fa37f0dfa20db69069ff6f99373d7
+
+after_success:
+  - ./vendor/bin/test-reporter
