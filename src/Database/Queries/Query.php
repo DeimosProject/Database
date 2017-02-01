@@ -10,6 +10,9 @@ use Deimos\QueryBuilder\QueryBuilder;
 class Query extends Select
 {
 
+    /**
+     * @var Database
+     */
     protected $database;
 
     /**
@@ -31,7 +34,7 @@ class Query extends Select
     {
         $self = clone $this;
         $self->setSelect([
-            'count' => $this->database->raw('COUNT(1)')
+            ['count' => $this->database->raw('COUNT(1)')]
         ]);
 
         $data = $self->findOne();
@@ -58,10 +61,14 @@ class Query extends Select
         $self = clone $this;
         $self->limit(1);
 
-        return $self
+        $sth = $self
             ->database
-            ->queryInstruction($self)
-            ->fetch(Connection::FETCH_ASSOC);
+            ->queryInstruction($self);
+
+        $data = $sth->fetch(Connection::FETCH_ASSOC);
+        $sth->closeCursor();
+
+        return $data;
     }
 
 }

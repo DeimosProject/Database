@@ -13,6 +13,11 @@ class Database
 {
 
     /**
+     * @var Transaction
+     */
+    protected $transaction;
+
+    /**
      * @var ConfigObject
      */
     protected $config;
@@ -54,6 +59,19 @@ class Database
         $this->connect();
 
         $this->queryBuilder = new QueryBuilder($this->adapter);
+    }
+
+    /**
+     * @return Transaction
+     */
+    public function transaction()
+    {
+        if (!$this->transaction)
+        {
+            $this->transaction = new Transaction($this);
+        }
+
+        return $this->transaction;
     }
 
     /**

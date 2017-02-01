@@ -31,9 +31,18 @@ class Insert extends Instruction\Insert
      */
     public function insert()
     {
-        $this->database->queryInstruction($this);
+        $builder = $this->builder;
 
-        return $this->builder->adapter()->insertId();
+        return $this->database->transaction()->call(function ($database) use ($builder)
+        {
+            /**
+             * @var Database     $database
+             * @var QueryBuilder $builder
+             */
+            $database->queryInstruction($this);
+
+            return $builder->adapter()->insertId();
+        });
     }
 
 }

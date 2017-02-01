@@ -26,23 +26,35 @@ class Update extends Instruction\Update
         $this->database = $database;
     }
 
-    public function update()
+    /**
+     * @param Update|null $query
+     *
+     * @return int
+     */
+    public function update(self $query = null)
     {
-        return $this
-            ->database
-            ->queryInstruction($this)
-            ->rowCount();
+        $query = $query ?: $this;
+
+        return $this->database->transaction()->call(function ($database) use ($query)
+        {
+            /**
+             * @var Database $database
+             */
+            return $database
+                ->queryInstruction($query)
+                ->rowCount();
+        });
     }
 
+    /**
+     * @return int
+     */
     public function updateOne()
     {
-        $self = clone $this;
-        $self->limit(1);
+        $query = clone $this;
+        $query->limit(1);
 
-        return $self
-            ->database
-            ->queryInstruction($self)
-            ->rowCount();
+        return $this->update($query);
     }
 
 }

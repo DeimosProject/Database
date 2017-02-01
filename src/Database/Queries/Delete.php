@@ -31,10 +31,17 @@ class Delete extends Instruction\Delete
      */
     public function delete()
     {
-        return $this
-            ->database
-            ->queryInstruction($this)
-            ->rowCount();
+        $query = $this;
+
+        return $this->database->transaction()->call(function ($database) use ($query)
+        {
+            /**
+             * @var Database     $database
+             */
+            return $database
+                ->queryInstruction($query)
+                ->rowCount();
+        });
     }
 
 }
