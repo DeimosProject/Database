@@ -34,7 +34,7 @@ class Query extends Select
     {
         $self = clone $this;
         $self->setSelect([
-            ['count' => $this->database->raw('COUNT(1)')]
+            'count' => $this->database->raw('COUNT(1)')
         ]);
 
         $data = $self->findOne();
