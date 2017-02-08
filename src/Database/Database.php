@@ -122,7 +122,7 @@ class Database
      */
     public function query()
     {
-        return new Queries\Query($this->queryBuilder, $this);
+        return new Queries\Query($this);
     }
 
     /**
@@ -130,7 +130,7 @@ class Database
      */
     public function insert()
     {
-        return new Queries\Insert($this->queryBuilder, $this);
+        return new Queries\Insert($this);
     }
 
     /**
@@ -138,7 +138,7 @@ class Database
      */
     public function update()
     {
-        return new Queries\Update($this->queryBuilder, $this);
+        return new Queries\Update($this);
     }
 
     /**
@@ -146,7 +146,7 @@ class Database
      */
     public function delete()
     {
-        return new Queries\Delete($this->queryBuilder, $this);
+        return new Queries\Delete($this);
     }
 
     /**

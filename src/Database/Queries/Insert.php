@@ -17,12 +17,11 @@ class Insert extends Instruction\Insert
     /**
      * Instruction constructor.
      *
-     * @param QueryBuilder $builder
      * @param Database     $database
      */
-    public function __construct(QueryBuilder $builder, Database $database)
+    public function __construct(Database $database)
     {
-        parent::__construct($builder);
+        parent::__construct($database->queryBuilder());
         $this->database = $database;
     }
 
