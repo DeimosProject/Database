@@ -62,6 +62,14 @@ class Database
     }
 
     /**
+     * @return QueryBuilder
+     */
+    public function queryBuilder()
+    {
+        return $this->queryBuilder;
+    }
+
+    /**
      * @return Transaction
      */
     public function transaction()
