@@ -197,7 +197,8 @@ class Database
 
             $this->connection = $this->adapter->connection(
                 $this->config->get('username'),
-                $this->config->get('password')
+                $this->config->get('password'),
+                $this->config->get('options')
             );
         }
 

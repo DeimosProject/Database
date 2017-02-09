@@ -32,26 +32,16 @@ class Insert extends Instruction\Insert
     {
         $builder = $this->builder;
 
-        if ($builder->adapter()->name() !== 'sqlite')
+        return $this->database->transaction()->call(function ($database) use ($builder)
         {
-            return $this->database->transaction()->call(function ($database) use ($builder)
-            {
-                /**
-                 * @var Database     $database
-                 * @var QueryBuilder $builder
-                 */
-                $database->queryInstruction($this);
+            /**
+             * @var Database     $database
+             * @var QueryBuilder $builder
+             */
+            $database->queryInstruction($this);
 
-                return $builder->adapter()->insertId();
-            });
-        }
-
-        /**
-         * @var QueryBuilder $builder
-         */
-        $this->database->queryInstruction($this);
-
-        return $builder->adapter()->insertId();
+            return $builder->adapter()->insertId();
+        });
     }
 
 }
