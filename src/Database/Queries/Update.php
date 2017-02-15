@@ -43,15 +43,4 @@ class Update extends Instruction\Update
         });
     }
 
-    /**
-     * @return int
-     */
-    public function updateOne()
-    {
-        $query = clone $this;
-        $query->limit(1);
-
-        return $query->update();
-    }
-
 }
