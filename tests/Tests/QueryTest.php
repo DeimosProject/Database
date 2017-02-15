@@ -6,7 +6,7 @@ use Deimos\Builder\Builder;
 use Deimos\Config\ConfigObject;
 use Deimos\Database\Database;
 
-class QueryTest extends \PHPUnit_Framework_TestCase
+class QueryTest extends \PHPUnit\Framework\TestCase
 {
 
     private $table = 'test';
