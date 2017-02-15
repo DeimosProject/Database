@@ -195,17 +195,24 @@ class Database
 
             $this->adapter->setPDOClass(Connection::class);
 
+            $options = [
+                Connection::ATTR_DEFAULT_FETCH_MODE => Connection::FETCH_ASSOC,
+                //Connection::ATTR_EMULATE_PREPARES   => true,
+                //Connection::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+                //Connection::ATTR_PERSISTENT         => false,
+                //Connection::ATTR_ERRMODE            => Connection::ERRMODE_EXCEPTION,
+                //Connection::MYSQL_ATTR_INIT_COMMAND       => 'SET NAMES utf8mb4'
+            ];
+
+            if ($this->adapter->name() !== 'sqlite')
+            {
+                $options[Connection::ATTR_ERRMODE] = Connection::ERRMODE_EXCEPTION;
+            }
+
             $this->connection = $this->adapter->connection(
                 $this->config->get('username'),
                 $this->config->get('password'),
-                $this->config->get('options', [
-                    Connection::ATTR_DEFAULT_FETCH_MODE => Connection::FETCH_ASSOC,
-                    //Connection::ATTR_EMULATE_PREPARES   => true,
-                    //Connection::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-                    //Connection::ATTR_PERSISTENT         => false,
-                    Connection::ATTR_ERRMODE            => Connection::ERRMODE_EXCEPTION,
-                    //Connection::MYSQL_ATTR_INIT_COMMAND       => 'SET NAMES utf8mb4'
-                ])
+                $this->config->get('options', $options)
             );
         }
 
