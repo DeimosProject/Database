@@ -26,14 +26,12 @@ class Update extends Instruction\Update
     }
 
     /**
-     * @param Update|null $query
-     *
      * @return int
      */
-    public function update(self $query = null)
+    public function update()
     {
-        $query = $query ?: $this;
-
+        $query = $this;
+        
         return $this->database->transaction()->call(function ($database) use ($query)
         {
             /**
@@ -53,7 +51,7 @@ class Update extends Instruction\Update
         $query = clone $this;
         $query->limit(1);
 
-        return $this->update($query);
+        return $query->update();
     }
 
 }
