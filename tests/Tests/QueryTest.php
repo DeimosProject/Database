@@ -106,7 +106,7 @@ class QueryTest extends \PHPUnit_Framework_TestCase
             ->from($this->table)
             ->where('id', 3)
             ->set('value', $this->db->raw('value*3'))
-            ->updateOne();
+            ->update();
 
         $allResults = $this->db->query()
             ->from($this->table)->find();
