@@ -4,10 +4,21 @@ namespace Deimos\Database\Queries;
 
 use Deimos\Database\Database;
 use Deimos\QueryBuilder\Instruction;
-use Deimos\QueryBuilder\QueryBuilder;
 
+/**
+ * Class Delete
+ *
+ * @package Deimos\Database\Queries
+ *
+ * @method int delete()
+ */
 class Delete extends Instruction\Delete
 {
+
+    use \Deimos\Database\Instruction
+    {
+        query as delete;
+    }
 
     /**
      * @var Database
@@ -23,24 +34,6 @@ class Delete extends Instruction\Delete
     {
         parent::__construct($database->queryBuilder());
         $this->database = $database;
-    }
-
-    /**
-     * @return int
-     */
-    public function delete()
-    {
-        $query = $this;
-
-        return $this->database->transaction()->call(function ($database) use ($query)
-        {
-            /**
-             * @var Database     $database
-             */
-            return $database
-                ->queryInstruction($query)
-                ->rowCount();
-        });
     }
 
 }

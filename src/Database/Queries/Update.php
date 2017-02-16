@@ -4,10 +4,20 @@ namespace Deimos\Database\Queries;
 
 use Deimos\Database\Database;
 use Deimos\QueryBuilder\Instruction;
-use Deimos\QueryBuilder\QueryBuilder;
 
+/**
+ * Class Update
+ *
+ * @package Deimos\Database\Queries
+ *
+ * @method int update()
+ */
 class Update extends Instruction\Update
 {
+
+    use \Deimos\Database\Instruction {
+        query as update;
+    }
 
     /**
      * @var Database
@@ -23,24 +33,6 @@ class Update extends Instruction\Update
     {
         parent::__construct($database->queryBuilder());
         $this->database = $database;
-    }
-
-    /**
-     * @return int
-     */
-    public function update()
-    {
-        $query = $this;
-        
-        return $this->database->transaction()->call(function ($database) use ($query)
-        {
-            /**
-             * @var Database $database
-             */
-            return $database
-                ->queryInstruction($query)
-                ->rowCount();
-        });
     }
 
 }

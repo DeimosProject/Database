@@ -5,7 +5,6 @@ namespace Deimos\Database\Queries;
 use Deimos\Database\Connection;
 use Deimos\Database\Database;
 use Deimos\QueryBuilder\Instruction\Select;
-use Deimos\QueryBuilder\QueryBuilder;
 
 class Query extends Select
 {
