@@ -4,6 +4,7 @@ namespace Deimos\Database;
 
 use Deimos\Config\ConfigObject;
 use Deimos\Helper\Exceptions\ExceptionEmpty;
+use Deimos\QueryBuilder\AbstractAdapter;
 use Deimos\QueryBuilder\Adapter;
 use Deimos\QueryBuilder\Instruction;
 use Deimos\QueryBuilder\QueryBuilder;
@@ -31,7 +32,7 @@ class Database
     ];
 
     /**
-     * @var Adapter
+     * @var AbstractAdapter
      */
     protected $adapter;
 
@@ -44,6 +45,11 @@ class Database
      * @var Connection
      */
     protected $connection;
+
+    /**
+     * @var \PDOStatement[]
+     */
+    protected $statements = [];
 
     /**
      * Database constructor.
@@ -101,10 +107,14 @@ class Database
      */
     public function rawQuery($sql, array $attributes = [])
     {
-        $statement = $this->connection()->prepare($sql);
-        $statement->execute($attributes);
+        if (empty($this->statements[$sql]))
+        {
+            $this->statements[$sql] = $this->connection()->prepare($sql);
+        }
 
-        return $statement;
+        $this->statements[$sql]->execute($attributes);
+
+        return $this->statements[$sql];
     }
 
     /**
@@ -200,7 +210,6 @@ class Database
                 //Connection::ATTR_EMULATE_PREPARES   => true,
                 //Connection::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
                 //Connection::ATTR_PERSISTENT         => false,
-                //Connection::ATTR_ERRMODE            => Connection::ERRMODE_EXCEPTION,
                 //Connection::MYSQL_ATTR_INIT_COMMAND       => 'SET NAMES utf8mb4'
             ];
 
