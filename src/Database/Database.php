@@ -29,7 +29,7 @@ class Database
     protected $adapters = [
         'mysql'  => Adapter\MySQL::class,
         'sqlite' => Adapter\SQLite::class,
-        'pgsql'  => Adapter\PostgresSQL::class,
+        'pgsql'  => Adapter\PostgreSQL::class,
     ];
 
     /**
