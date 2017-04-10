@@ -3,8 +3,9 @@
 namespace Tests;
 
 use Deimos\Builder\Builder;
-use Deimos\Config\ConfigObject;
+use Deimos\Config\Config;
 use Deimos\Database\Database;
+use Deimos\Helper\Helper;
 
 class QueryTest extends \PHPUnit\Framework\TestCase
 {
@@ -21,13 +22,14 @@ class QueryTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $builder = new Builder();
+        $helper  = new Helper($builder);
 
-        $configObject = new ConfigObject(
-            $builder,
-            dirname(__DIR__) . '/sqlite.php'
+        $config = new Config(
+            $helper,
+            dirname(__DIR__)
         );
 
-        $this->db = new Database($configObject);
+        $this->db = new Database($config->get('sqlite'));
     }
 
     protected function createDb()

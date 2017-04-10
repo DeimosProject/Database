@@ -9,6 +9,7 @@ use Deimos\QueryBuilder\Adapter;
 use Deimos\QueryBuilder\Instruction;
 use Deimos\QueryBuilder\QueryBuilder;
 use Deimos\QueryBuilder\RawQuery;
+use Deimos\Slice\Slice;
 
 class Database
 {
@@ -19,9 +20,9 @@ class Database
     protected $transaction;
 
     /**
-     * @var ConfigObject
+     * @var Slice
      */
-    protected $config;
+    protected $slice;
 
     /**
      * @var array
@@ -55,13 +56,13 @@ class Database
     /**
      * Database constructor.
      *
-     * @param $config
+     * @param $slice
      *
      * @throws ExceptionEmpty
      */
-    public function __construct(ConfigObject $config)
+    public function __construct(Slice $slice)
     {
-        $this->config = $config;
+        $this->slice = $slice;
 
         $this->connect();
 
@@ -187,20 +188,20 @@ class Database
     {
         if (!$this->connection)
         {
-            $key     = $this->config->getRequired('adapter');
+            $key     = $this->slice->getRequired('adapter');
             $adapter = $this->adapters[$key];
 
             $this->adapter = new $adapter();
 
-            $this->adapter->setHost($this->config->get('host'));
-            $this->adapter->setPort($this->config->get('port'));
+            $this->adapter->setHost($this->slice->getData('host'));
+            $this->adapter->setPort($this->slice->getData('port'));
 
             if (method_exists($this->adapter, 'setPath'))
             {
-                $this->adapter->setPath($this->config->get('path'));
+                $this->adapter->setPath($this->slice->getData('path'));
             }
 
-            $this->adapter->setDbName($this->config->get('database'));
+            $this->adapter->setDbName($this->slice->getData('database'));
 
             $this->adapter->setConnection($this);
 
@@ -220,9 +221,9 @@ class Database
             }
 
             $this->connection = $this->adapter->connection(
-                $this->config->get('username'),
-                $this->config->get('password'),
-                $this->config->get('options', $options)
+                $this->slice->getData('username'),
+                $this->slice->getData('password'),
+                $this->slice->getData('options', $options)
             );
         }
 

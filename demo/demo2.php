@@ -1,17 +1,10 @@
 <?php
 
-include_once dirname(__DIR__) . '/vendor/autoload.php';
-
 $table = 'asd';
 
-$builder = new \Deimos\Builder\Builder();
+include_once __DIR__ . '/bootstrap.php';
 
-$configObject = new \Deimos\Config\ConfigObject(
-    $builder,
-    __DIR__ . '/config.php'
-);
-
-$database = new \Deimos\Database\Database($configObject);
+$database = new \Deimos\Database\Database($db);
 
 //foreach (range(1, 5) as $name)
 //{

@@ -1,15 +1,10 @@
 <?php
 
-include_once dirname(__DIR__) . '/vendor/autoload.php';
+include_once __DIR__ . '/bootstrap.php';
 
-$builder = new \Deimos\Builder\Builder();
+$slice = $config->get('sqliteConfig');
 
-$configObject = new \Deimos\Config\ConfigObject(
-    $builder,
-    __DIR__ . '/sqliteConfig.php'
-);
-
-$database = new \Deimos\Database\Database($configObject);
+$database = new \Deimos\Database\Database($slice);
 
 $database->exec('
     CREATE TABLE IF NOT EXISTS users (

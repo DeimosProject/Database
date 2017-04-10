@@ -1,15 +1,8 @@
 <?php
 
-include_once dirname(__DIR__) . '/vendor/autoload.php';
+include_once __DIR__ . '/bootstrap.php';
 
-$builder = new \Deimos\Builder\Builder();
-
-$configObject = new \Deimos\Config\ConfigObject(
-    $builder,
-    __DIR__ . '/config.php'
-);
-
-$database = new \Deimos\Database\Database($configObject);
+$database = new \Deimos\Database\Database($db);
 
 $userQuery = $database->query()
     ->from('users')

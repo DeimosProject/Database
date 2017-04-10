@@ -1,17 +1,15 @@
 <?php
 
-include_once dirname(__DIR__) . '/vendor/autoload.php';
+include_once __DIR__ . '/bootstrap.php';
 
-$builder = new \Deimos\Builder\Builder();
-
-$configObject = new \Deimos\Config\ConfigObject($builder, [
+$pgsql = $db->make([
     'adapter'  => 'pgsql',
     'database' => 'test',
     'username' => 'root',
     'password' => 'root',
 ]);
 
-$database = new \Deimos\Database\Database($configObject);
+$database = new \Deimos\Database\Database($pgsql);
 
 $userQuery = $database->query()
     ->from('users')
