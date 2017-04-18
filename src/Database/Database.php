@@ -81,6 +81,11 @@ class Database
 //        $this->queryBuilder[$defaultConnection] = new QueryBuilder($this->adapter);
     }
 
+    public function connectionName()
+    {
+        return $this->defaultConnection;
+    }
+
     /**
      * @param string $connection
      *
