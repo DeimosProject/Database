@@ -70,6 +70,13 @@ class Database
         $this->slice             = $slice;
         $this->defaultConnection = $defaultConnection;
 
+        if (isset($this->slice['adapter']))
+        {
+            $this->slice = $this->slice->make([
+                $defaultConnection => $this->slice->asArray()
+            ]);
+        }
+
 //        $this->connect($defaultConnection);
 //        $this->queryBuilder[$defaultConnection] = new QueryBuilder($this->adapter);
     }
