@@ -33,22 +33,22 @@ class Transaction
      *
      * @return mixed
      */
-    public function call(callable $callback)
+    public function call(callable $callback, $connection = null)
     {
-        $this->database->connection()->beginTransaction();
+        $this->database->connection($connection)->beginTransaction();
 
         try
         {
             $result = $callback($this->database);
 
-            $this->database->connection()->commit();
+            $this->database->connection($connection)->commit();
             $this->state = static::STATE_COMMIT;
 
             return $result;
         }
         catch (\Exception $exception)
         {
-            $this->database->connection()->rollBack();
+            $this->database->connection($connection)->rollBack();
             $this->state = static::STATE_ROLLBACK;
 
             return null;

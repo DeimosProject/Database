@@ -2,14 +2,7 @@
 
 include_once __DIR__ . '/bootstrap.php';
 
-$pgsql = $db->make([
-    'adapter'  => 'pgsql',
-    'database' => 'test',
-    'username' => 'root',
-    'password' => 'root',
-]);
-
-$database = new \Deimos\Database\Database($pgsql);
+$database = new \Deimos\Database\Database($db, 'pgsql');
 
 $userQuery = $database->query()
     ->from('users')

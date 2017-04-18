@@ -2,7 +2,6 @@
 
 namespace Deimos\Database;
 
-use Deimos\Config\ConfigObject;
 use Deimos\Helper\Exceptions\ExceptionEmpty;
 use Deimos\QueryBuilder\AbstractAdapter;
 use Deimos\QueryBuilder\Adapter;
@@ -34,14 +33,14 @@ class Database
     ];
 
     /**
-     * @var AbstractAdapter
+     * @var AbstractAdapter[]
      */
-    protected $adapter;
+    protected $adapterProviders = [];
 
     /**
-     * @var QueryBuilder
+     * @var QueryBuilder[]
      */
-    protected $queryBuilder;
+    protected $queryBuilders;
 
     /**
      * @var Connection
@@ -54,27 +53,43 @@ class Database
     protected $statements = [];
 
     /**
+     * @var string
+     */
+    protected $defaultConnection;
+
+    /**
      * Database constructor.
      *
      * @param $slice
+     * @param $defaultConnection
      *
      * @throws ExceptionEmpty
      */
-    public function __construct(Slice $slice)
+    public function __construct(Slice $slice, $defaultConnection = 'default')
     {
-        $this->slice = $slice;
+        $this->slice             = $slice;
+        $this->defaultConnection = $defaultConnection;
 
-        $this->connect();
-
-        $this->queryBuilder = new QueryBuilder($this->adapter);
+//        $this->connect($defaultConnection);
+//        $this->queryBuilder[$defaultConnection] = new QueryBuilder($this->adapter);
     }
 
     /**
+     * @param string $connection
+     *
      * @return QueryBuilder
      */
-    public function queryBuilder()
+    public function queryBuilder($connection = null)
     {
-        return $this->queryBuilder;
+        $key = $connection ?? $this->defaultConnection;
+
+        if (!isset($this->queryBuilders[$key]))
+        {
+            $this->connection($key); // init connection
+            $this->queryBuilders[$key] = new QueryBuilder($this->adapterProviders[$key]);
+        }
+
+        return $this->queryBuilders[$key];
     }
 
     /**
@@ -104,14 +119,15 @@ class Database
     /**
      * @param string $sql
      * @param array  $attributes
+     * @param string $connection
      *
      * @return \PDOStatement
      */
-    public function rawQuery($sql, array $attributes = [])
+    public function rawQuery($sql, array $attributes = [], $connection = null)
     {
         if (empty($this->statements[$sql]))
         {
-            $this->statements[$sql] = $this->connection()->prepare($sql);
+            $this->statements[$sql] = $this->connection($connection)->prepare($sql);
         }
 
         $this->statements[$sql]->execute($attributes);
@@ -121,44 +137,45 @@ class Database
 
     /**
      * @param string $sql
+     * @param string $connection
      *
      * @return int
      */
-    public function exec($sql)
+    public function exec($sql, $connection = null)
     {
-        return $this->connection()->exec($sql);
+        return $this->connection($connection)->exec($sql);
     }
 
     /**
      * @return Queries\Query
      */
-    public function query()
+    public function query($connection = null)
     {
-        return new Queries\Query($this);
+        return new Queries\Query($this, $connection ?? $this->defaultConnection);
     }
 
     /**
      * @return Queries\Insert
      */
-    public function insert()
+    public function insert($connection = null)
     {
-        return new Queries\Insert($this);
+        return new Queries\Insert($this, $connection ?? $this->defaultConnection);
     }
 
     /**
      * @return Queries\Update
      */
-    public function update()
+    public function update($connection = null)
     {
-        return new Queries\Update($this);
+        return new Queries\Update($this, $connection ?? $this->defaultConnection);
     }
 
     /**
      * @return Queries\Delete
      */
-    public function delete()
+    public function delete($connection = null)
     {
-        return new Queries\Delete($this);
+        return new Queries\Delete($this, $connection ?? $this->defaultConnection);
     }
 
     /**
@@ -166,46 +183,42 @@ class Database
      *
      * @return \PDOStatement
      */
-    public function queryInstruction(Instruction $object)
+    public function queryInstruction(Instruction $object, $connection = null)
     {
-        return $this->rawQuery((string)$object, $object->attributes());
+        return $this->rawQuery((string)$object, $object->attributes(), $connection);
     }
 
     /**
-     * @return Connection
-     */
-    public function connection()
-    {
-        return $this->connection;
-    }
-
-    /**
-     * @return Connection
+     * @param string $connection
      *
-     * @throws ExceptionEmpty
+     * @return Connection
      */
-    protected function connect()
+    public function connection($connection = null)
     {
-        if (!$this->connection)
+        $type = $connection ?? $this->defaultConnection;
+
+        if (!isset($this->connection[$type]))
         {
-            $key     = $this->slice->getRequired('adapter');
+            $slice = $this->slice->getSlice($type);
+
+            $key     = $slice->getRequired('adapter');
             $adapter = $this->adapters[$key];
 
-            $this->adapter = new $adapter();
+            $this->adapterProviders[$type] = new $adapter();
 
-            $this->adapter->setHost($this->slice->getData('host'));
-            $this->adapter->setPort($this->slice->getData('port'));
+            $this->adapterProviders[$type]->setHost($slice->getData('host'));
+            $this->adapterProviders[$type]->setPort($slice->getData('port'));
 
-            if (method_exists($this->adapter, 'setPath'))
+            if (method_exists($this->adapterProviders[$type], 'setPath'))
             {
-                $this->adapter->setPath($this->slice->getData('path'));
+                $this->adapterProviders[$type]->setPath($slice->getData('path'));
             }
 
-            $this->adapter->setDbName($this->slice->getData('database'));
+            $this->adapterProviders[$type]->setDbName($slice->getData('database'));
 
-            $this->adapter->setConnection($this);
+            $this->adapterProviders[$type]->setConnection($this);
 
-            $this->adapter->setPDOClass(Connection::class);
+            $this->adapterProviders[$type]->setPDOClass(Connection::class);
 
             $options = [
                 Connection::ATTR_DEFAULT_FETCH_MODE => Connection::FETCH_ASSOC,
@@ -215,19 +228,19 @@ class Database
                 //Connection::MYSQL_ATTR_INIT_COMMAND       => 'SET NAMES utf8mb4'
             ];
 
-            if ($this->adapter->name() !== 'sqlite')
+            if ($this->adapterProviders[$type]->name() !== 'sqlite')
             {
                 $options[Connection::ATTR_ERRMODE] = Connection::ERRMODE_EXCEPTION;
             }
 
-            $this->connection = $this->adapter->connection(
-                $this->slice->getData('username'),
-                $this->slice->getData('password'),
-                $this->slice->getData('options', $options)
+            $this->connection[$type] = $this->adapterProviders[$type]->connection(
+                $slice->getData('username'),
+                $slice->getData('password'),
+                $slice->getData('options', $options)
             );
         }
 
-        return $this->connection;
+        return $this->connection[$type];
     }
 
 }

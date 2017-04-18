@@ -19,9 +19,9 @@ class Query extends Select
      *
      * @param Database     $database
      */
-    public function __construct(Database $database)
+    public function __construct(Database $database, $connection)
     {
-        parent::__construct($database->queryBuilder());
+        parent::__construct($database->queryBuilder($connection), $connection);
         $this->database = $database;
     }
 
@@ -47,7 +47,7 @@ class Query extends Select
     {
         return $this
             ->database
-            ->queryInstruction($this)
+            ->queryInstruction($this, $this->connection)
             ->fetchAll(Connection::FETCH_ASSOC);
     }
 
@@ -61,7 +61,7 @@ class Query extends Select
 
         $sth = $self
             ->database
-            ->queryInstruction($self);
+            ->queryInstruction($self, $this->connection);
 
         $data = $sth->fetch(Connection::FETCH_ASSOC);
         $sth->closeCursor();

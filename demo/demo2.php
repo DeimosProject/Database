@@ -14,7 +14,7 @@ $database = new \Deimos\Database\Database($db);
 //
 //    var_dump($query->insert());
 //}
-
+//
 //$query = $database->delete()->from($table)->where('id', '<', 400)->where('id', '>', 200);
 //
 //var_dump($query->delete());

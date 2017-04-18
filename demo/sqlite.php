@@ -2,9 +2,7 @@
 
 include_once __DIR__ . '/bootstrap.php';
 
-$slice = $config->get('sqliteConfig');
-
-$database = new \Deimos\Database\Database($slice);
+$database = new \Deimos\Database\Database($db, 'sqlite');
 
 $database->exec('
     CREATE TABLE IF NOT EXISTS users (

@@ -29,9 +29,9 @@ class Update extends Instruction\Update
      *
      * @param Database     $database
      */
-    public function __construct(Database $database)
+    public function __construct(Database $database, $connection)
     {
-        parent::__construct($database->queryBuilder());
+        parent::__construct($database->queryBuilder($connection), $connection);
         $this->database = $database;
     }
 

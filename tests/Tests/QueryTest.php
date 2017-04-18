@@ -29,7 +29,7 @@ class QueryTest extends \PHPUnit\Framework\TestCase
             dirname(__DIR__)
         );
 
-        $this->db = new Database($config->get('sqlite'));
+        $this->db = new Database($config->get('config'));
     }
 
     protected function createDb()

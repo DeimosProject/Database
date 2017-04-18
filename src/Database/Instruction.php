@@ -14,8 +14,8 @@ trait Instruction
              * @var Database $database
              */
             return $database
-                ->queryInstruction($query)
+                ->queryInstruction($query, $this->connection)
                 ->rowCount();
-        });
+        }, $this->connection);
     }
 }
