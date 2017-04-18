@@ -158,7 +158,7 @@ class Database
      */
     public function query($connection = null)
     {
-        return new Queries\Query($this, $connection ?? $this->defaultConnection);
+        return new Queries\Query($this, $connection ?: $this->defaultConnection);
     }
 
     /**
@@ -166,7 +166,7 @@ class Database
      */
     public function insert($connection = null)
     {
-        return new Queries\Insert($this, $connection ?? $this->defaultConnection);
+        return new Queries\Insert($this, $connection ?: $this->defaultConnection);
     }
 
     /**
@@ -174,7 +174,7 @@ class Database
      */
     public function update($connection = null)
     {
-        return new Queries\Update($this, $connection ?? $this->defaultConnection);
+        return new Queries\Update($this, $connection ?: $this->defaultConnection);
     }
 
     /**
@@ -182,7 +182,7 @@ class Database
      */
     public function delete($connection = null)
     {
-        return new Queries\Delete($this, $connection ?? $this->defaultConnection);
+        return new Queries\Delete($this, $connection ?: $this->defaultConnection);
     }
 
     /**
